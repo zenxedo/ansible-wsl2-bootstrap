@@ -23,12 +23,19 @@ apt install -y git || error_exit "Failed to install Git."
 echo "Installing Ansible..."
 apt install -y ansible || error_exit "Failed to install Ansible."
 
+# Check if the directory exists, and if it does, remove it
+PLAYBOOK_DIR=~/ansible-playbook
+if [ -d "$PLAYBOOK_DIR" ]; then
+  echo "Directory $PLAYBOOK_DIR already exists. Removing it..."
+  rm -rf "$PLAYBOOK_DIR" || error_exit "Failed to remove existing directory $PLAYBOOK_DIR."
+fi
+
 # Clone the repository and run the Ansible playbook
 echo "Cloning the Ansible playbook repository..."
-git clone https://github.com/zenxedo/ansible-wsl2-bootstrap.git ~/ansible-playbook || error_exit "Failed to clone the repository."
+git clone https://github.com/zenxedo/ansible-wsl2-bootstrap.git "$PLAYBOOK_DIR" || error_exit "Failed to clone the repository."
 
 echo "Running the Ansible playbook..."
-cd ~/ansible-playbook || error_exit "Failed to change directory to the playbook folder."
+cd "$PLAYBOOK_DIR" || error_exit "Failed to change directory to the playbook folder."
 ansible-playbook playbook.yml --ask-become-pass || error_exit "Failed to run the Ansible playbook."
 
 # Remove the bootstrap script after execution
