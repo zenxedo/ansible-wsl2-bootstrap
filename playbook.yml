@@ -1,52 +1,53 @@
 ---
-- name: WSL2 Bootstrap Playbook with Conditional SSH Key Fetching
+- name: WSL2 Bootstrap Playbook
   hosts: localhost
   become: true
-  vars_files:
-    - vars.yml
+
+  vars:
+    # Define the essential packages
+    essential_packages:
+      - curl
+      - wget
+
+    # Python installation control
+    install_python: true
+    python_packages:
+      - python3
+      - python3-pip
+      - python3-venv
+
+    # Docker installation control
+    install_docker: true
+    docker_packages:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-compose
+
   tasks:
 
-    # Step 1: Conditionally include the SSH key fetching playbook
-    - name: Include SSH key fetching playbook if fetch_ssh_keys is true
-      include_playbook: fetch_ssh_keys.yml
-      when: fetch_ssh_keys
-
-    # Step 2: Update and upgrade packages
-    - name: Update and upgrade packages
+    # Step 1: Update and upgrade system packages
+    - name: Update and upgrade system packages
       apt:
         update_cache: yes
         upgrade: dist
 
-    # Step 3: Install essential system packages
+    # Step 2: Install essential packages (curl, wget)
     - name: Install essential packages
       apt:
         name: "{{ essential_packages }}"
         state: present
 
-    # Step 4: Install Python and related tools
+    # Step 3: Conditionally install Python and related tools
     - name: Install Python packages
       apt:
         name: "{{ python_packages }}"
         state: present
       when: install_python
 
-    # Step 5: Install Docker and Docker-related tools
+    # Step 4: Conditionally install Docker and related tools
     - name: Install Docker packages
       apt:
         name: "{{ docker_packages }}"
         state: present
       when: install_docker
-
-    # Step 6: Install Zsh
-    - name: Install Zsh packages
-      apt:
-        name: "{{ zsh_packages }}"
-        state: present
-      when: install_zsh
-
-    # Step 7: Install additional development tools
-    - name: Install development tools
-      apt:
-        name: "{{ development_packages }}"
-        state: present
-      when: install_dev_tools

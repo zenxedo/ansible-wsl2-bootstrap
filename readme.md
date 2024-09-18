@@ -1,35 +1,36 @@
 # Ansible WSL2 Bootstrap
 
-Set up a development environment in WSL2 with tools like Docker, Python, and Zsh. Optionally, fetch existing SSH keys from another machine.
+This playbook sets up a basic development environment in WSL2, installing essential packages like Docker, Python, and more.
 
 ## Quick Setup
 
-Run this command in your WSL terminal to download and execute the bootstrap script:
+Run the following command in your WSL terminal to download and run the playbook:
 
 ```bash
-curl -s https://raw.githubusercontent.com/zenxedo/ansible-wsl2-bootstrap/master/bootstrap.sh -o bootstrap.sh && sudo chmod +x bootstrap.sh && sudo ./bootstrap.sh
+curl -s https://raw.githubusercontent.com/your-repo/ansible-wsl2-bootstrap/master/bootstrap.yml -o bootstrap.yml && sudo ansible-playbook bootstrap.yml --ask-become-pass
 ```
 
-## Configuration
+## What It Does
 
-Edit `vars.yml` to customize the setup:
+1. **Installs essential packages** like `curl` and `wget`.
+2. **Optionally installs Python** (`python3`, `pip`, `venv`).
+3. **Optionally installs Docker** (`docker-ce`, `docker-compose`, etc.).
+
+## Customization
+
+To control what the playbook installs, edit the variables in `bootstrap.yml`:
 
 ```yaml
-# Fetch SSH keys from another machine (set to true if needed)
-fetch_ssh_keys: true
-remote_machine_ip: "your_remote_machine_ip_or_hostname"
-
-# Other options
-install_python: true
-install_docker: true
-install_zsh: true
-install_dev_tools: true
+install_python: true  # Set to false to skip Python installation
+install_docker: true  # Set to false to skip Docker installation
 ```
 
 ## Running the Playbook
 
+If you've already downloaded the playbook, run it manually with:
+
 ```bash
-ansible-playbook main_playbook.yml --ask-become-pass
+sudo ansible-playbook bootstrap.yml --ask-become-pass
 ```
 
 ## License
