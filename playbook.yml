@@ -1,0 +1,170 @@
+---
+- name: WSL2 Bootstrap Playbook
+  hosts: localhost
+  become: true
+  tasks:
+
+    - name: Update and upgrade packages
+      apt:
+        update_cache: yes
+        upgrade: dist
+
+    - name: Install essential tools
+      apt:
+        name:
+          - curl
+          - wget
+          - git
+          - build-essential
+          - ca-certificates
+          - apt-transport-https
+          - software-properties-common
+          - gnupg2
+        state: present
+
+    - name: Install Python and pip
+      apt:
+        name:
+          - python3
+          - python3-pip
+          - python3-venv
+        state: present
+
+    - name: Install Node.js (LTS)
+      apt_key:
+        url: https://deb.nodesource.com/gpgkey/nodesource.gpg.key
+        state: present
+      apt_repository:
+        repo: "deb https://deb.nodesource.com/node_18.x {{ ansible_distribution_release }} main"
+        state: present
+      apt:
+        name: nodejs
+        state: present
+
+    - name: Remove old Docker versions
+      apt:
+        name:
+          - docker
+          - docker-engine
+          - docker.io
+          - containerd
+          - runc
+        state: absent
+
+    - name: Install Docker dependencies
+      apt:
+        name:
+          - ca-certificates
+          - curl
+          - gnupg
+          - lsb-release
+        state: present
+
+    - name: Add Docker's official GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Set up Docker repository
+      apt_repository:
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+        state: present
+
+    - name: Install Docker
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+        state: present
+
+    - name: Configure Docker to run without sudo
+      user:
+        name: "{{ ansible_user_id }}"
+        groups: docker
+        append: yes
+
+    - name: Install Docker Compose
+      get_url:
+        url: "https://github.com/docker/compose/releases/download/2.0.1/docker-compose-{{ ansible_system | lower }}-{{ ansible_architecture }}"
+        dest: /usr/local/bin/docker-compose
+        mode: '0755'
+      register: compose_install
+
+    - name: Create symlink for docker-compose
+      file:
+        src: /usr/local/bin/docker-compose
+        dest: /usr/bin/docker-compose
+        state: link
+      when: compose_install.changed
+
+    - name: Set up Git
+      block:
+        - name: Prompt for Git username
+          ansible.builtin.prompt:
+            prompt: "Enter your Git username"
+          register: git_username
+
+        - name: Prompt for Git email
+          ansible.builtin.prompt:
+            prompt: "Enter your Git email"
+          register: git_email
+
+        - name: Set Git user.name
+          git_config:
+            name: user.name
+            value: "{{ git_username.answer }}"
+            scope: global
+
+        - name: Set Git user.email
+          git_config:
+            name: user.email
+            value: "{{ git_email.answer }}"
+            scope: global
+
+    - name: Generate SSH key for GitHub (if not exists)
+      openssh_keypair:
+        path: ~/.ssh/id_rsa
+        type: rsa
+        size: 4096
+        state: present
+        comment: "{{ git_email.answer }}"
+
+    - name: Print SSH public key for GitHub
+      command: cat ~/.ssh/id_rsa.pub
+      register: ssh_pubkey
+
+    - name: Display the SSH public key
+      debug:
+        msg: "Your SSH public key is: {{ ssh_pubkey.stdout }}"
+
+    - name: Install Zsh
+      apt:
+        name: zsh
+        state: present
+
+    - name: Install Oh My Zsh
+      shell: |
+        sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+      args:
+        executable: /bin/zsh
+      when: ansible_user_shell != "/usr/bin/zsh"
+
+    - name: Change default shell to Zsh
+      user:
+        name: "{{ ansible_user_id }}"
+        shell: /usr/bin/zsh
+
+    - name: Install useful global npm packages
+      npm:
+        name:
+          - typescript
+          - eslint
+          - prettier
+        global: yes
+
+    - name: Install global Python packages
+      pip:
+        name:
+          - virtualenv
+          - ipython
