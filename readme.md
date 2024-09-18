@@ -4,10 +4,10 @@ Set up a development environment in WSL2 with tools like Docker, Python, and Zsh
 
 ## Quick Setup
 
-Run this command in your WSL terminal to get started:
+Run this command in your WSL terminal to download and execute the bootstrap script:
 
 ```bash
-bash <(curl -s https://raw.githubusercontent.com/zenxedo/ansible-wsl2-bootstrap/master/bootstrap.sh)
+curl -s https://raw.githubusercontent.com/zenxedo/ansible-wsl2-bootstrap/master/bootstrap.sh -o bootstrap.sh && sudo chmod +x bootstrap.sh && sudo ./bootstrap.sh
 ```
 
 ## Configuration
