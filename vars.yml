@@ -1,0 +1,39 @@
+# vars.yml
+
+# Essential system utilities and libraries
+essential_packages:
+  - curl                  # Command line tool for transferring data with URLs
+  - wget                  # Network downloader
+  - git                   # Distributed version control system
+  - build-essential       # Essential compilation tools for building software
+  - ca-certificates       # CA certificates for SSL
+  - apt-transport-https    # HTTPS support for APT
+  - software-properties-common # Common package for managing software properties
+  - gnupg2                # GNU Privacy Guard for encryption
+
+# Python and related tools
+install_python: true
+python_packages:
+  - python3               # Python 3 interpreter
+  - python3-pip           # Python package manager (pip)
+  - python3-venv          # Python virtual environments
+
+# Docker and Docker-related tools
+install_docker: true
+docker_packages:
+  - docker-ce             # Docker Community Edition
+  - docker-ce-cli         # Docker CLI tools
+  - containerd.io         # Container runtime
+  - docker-compose        # Docker Compose for multi-container applications
+
+# Zsh and Oh My Zsh
+install_zsh: true
+zsh_packages:
+  - zsh                   # Z Shell
+  - fonts-powerline       # Fonts needed for Oh My Zsh themes
+
+# Additional Development Tools
+install_dev_tools: true
+development_packages:
+  - vim                   # Terminal text editor
+  - tmux                  # Terminal multiplexer for managing sessions
