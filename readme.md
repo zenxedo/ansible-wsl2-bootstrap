@@ -1,34 +1,34 @@
 # Ansible WSL2 Bootstrap
 
-This playbook sets up a basic development environment in WSL2, installing essential packages like Docker, Python, and more.
+This repository contains an Ansible playbook to set up Python and Docker on an Ubuntu-based WSL2 environment. It automates the installation of Python3, Docker, and all the necessary dependencies.
 
-## Quick Setup
+## Quick Start
 
-Run the following command in your WSL terminal to download and run the bootstrap script:
+To quickly set up this environment, run the following one-liner in your terminal:
 
 ```bash
 curl -s https://raw.githubusercontent.com/zenxedo/ansible-wsl2-bootstrap/master/bootstrap.sh -o bootstrap.sh && sudo bash bootstrap.sh
 ```
 
-## What It Does
+This will:
 
-1. **Installs essential packages** like `curl` and `wget`.
-2. **Optionally installs Python** (`python3`, `pip`, `venv`).
-3. **Optionally installs Docker** (`docker-ce`, `docker-compose`, etc.).
+- Download and execute the `bootstrap.sh` script, which clones this repository.
+- Install Ansible and run the included playbook to set up Python, Docker, and other required dependencies.
 
-## Customization
+## What this playbook does
 
-To control what the playbook installs, edit the variables in `playbook.yml`:
+The Ansible playbook in this repository performs the following tasks:
 
-```yaml
-install_python: true  # Set to false to skip Python installation
-install_docker: true  # Set to false to skip Docker installation
-```
+- Updates and upgrades the system packages.
+- Installs Python3 and pip.
+- Installs Docker along with its dependencies.
+- Adds the current user to the Docker group to enable running Docker commands without `sudo`.
+- Ensures Docker is started and enabled on boot.
+- Installs the Docker Python module to manage Docker containers through Python.
+- Verifies Docker installation by displaying the installed Docker version.
 
-## Running the Playbook
+## Prerequisites
 
-If you've already downloaded the playbook, you can run it manually after executing the bootstrap script.
+- Ubuntu WSL2 environment (or Ubuntu-based system).
+- `curl` should be installed to use the one-liner.
 
-## License
-
-Licensed under the MIT License.
