@@ -23,17 +23,18 @@ apt install -y git || error_exit "Failed to install Git."
 echo "Installing Ansible..."
 apt install -y ansible || error_exit "Failed to install Ansible."
 
-# Check if the playbook directory exists, and if so, pull the latest changes
+# Define the playbook directory
 PLAYBOOK_DIR=~/ansible-playbook
+
+# Check if the directory exists, and if it does, remove it
 if [ -d "$PLAYBOOK_DIR" ]; then
-  echo "Directory $PLAYBOOK_DIR already exists. Pulling latest changes..."
-  cd "$PLAYBOOK_DIR" || error_exit "Failed to change directory to the playbook folder."
-  git pull || error_exit "Failed to pull the latest changes."
-else
-  # Clone the repository if the directory doesn't exist
-  echo "Cloning the Ansible playbook repository..."
-  git clone https://github.com/zenxedo/ansible-wsl2-bootstrap.git "$PLAYBOOK_DIR" || error_exit "Failed to clone the repository."
+  echo "Directory $PLAYBOOK_DIR already exists. Removing it..."
+  rm -rf "$PLAYBOOK_DIR" || error_exit "Failed to remove existing directory $PLAYBOOK_DIR."
 fi
+
+# Clone the repository and run the Ansible playbook
+echo "Cloning the Ansible playbook repository..."
+git clone https://github.com/zenxedo/ansible-wsl2-bootstrap.git "$PLAYBOOK_DIR" || error_exit "Failed to clone the repository."
 
 echo "Running the Ansible playbook..."
 cd "$PLAYBOOK_DIR" || error_exit "Failed to change directory to the playbook folder."
