@@ -1,39 +1,41 @@
 # vars.yml
 
-# Essential system utilities and libraries
-essential_packages:
-  - curl                  # Command line tool for transferring data with URLs
-  - wget                  # Network downloader
-  - git                   # Distributed version control system
-  - build-essential       # Essential compilation tools for building software
-  - ca-certificates       # CA certificates for SSL
-  - apt-transport-https    # HTTPS support for APT
-  - software-properties-common # Common package for managing software properties
-  - gnupg2                # GNU Privacy Guard for encryption
+# Define whether to fetch SSH keys from another machine
+fetch_ssh_keys: true
 
-# Python and related tools
+# Define the remote machine from which to fetch SSH keys
+remote_machine_ip: "remote_machine_ip_or_hostname"
+
+# Variables for main playbook
+essential_packages:
+  - curl
+  - wget
+  - git
+  - build-essential
+  - ca-certificates
+  - apt-transport-https
+  - software-properties-common
+  - gnupg2
+
 install_python: true
 python_packages:
-  - python3               # Python 3 interpreter
-  - python3-pip           # Python package manager (pip)
-  - python3-venv          # Python virtual environments
+  - python3
+  - python3-pip
+  - python3-venv
 
-# Docker and Docker-related tools
 install_docker: true
 docker_packages:
-  - docker-ce             # Docker Community Edition
-  - docker-ce-cli         # Docker CLI tools
-  - containerd.io         # Container runtime
-  - docker-compose        # Docker Compose for multi-container applications
+  - docker-ce
+  - docker-ce-cli
+  - containerd.io
+  - docker-compose
 
-# Zsh and Oh My Zsh
 install_zsh: true
 zsh_packages:
-  - zsh                   # Z Shell
-  - fonts-powerline       # Fonts needed for Oh My Zsh themes
+  - zsh
+  - fonts-powerline
 
-# Additional Development Tools
 install_dev_tools: true
 development_packages:
-  - vim                   # Terminal text editor
-  - tmux                  # Terminal multiplexer for managing sessions
+  - vim
+  - tmux

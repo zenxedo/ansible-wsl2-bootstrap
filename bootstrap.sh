@@ -1,33 +1,32 @@
 #!/bin/bash
 
-# Ensure the script is run as root
-if [ "$EUID" -ne 0 ]; then
-  echo "Please run as root"
+# Make sure the script is run as root
+if [ "$EUID" -ne 0 ]
+  then echo "Please run as root"
   exit
 fi
 
-# Step 1: Update system
-echo "Updating the system..."
-sudo apt update && sudo apt upgrade -y
+# Update and upgrade
+echo "Updating package lists and upgrading packages..."
+apt update && apt upgrade -y
 
-# Step 2: Install Ansible
+# Install essential tools
+echo "Installing essential tools..."
+apt install -y curl wget git build-essential ca-certificates apt-transport-https software-properties-common gnupg2
+
+# Install Ansible (if required for playbook execution)
 echo "Installing Ansible..."
-sudo apt install -y ansible
+apt install -y ansible
 
-# Step 3: Clone the Ansible playbook (optional: change repo URL to your actual repo)
+# Clone the repository and run the Ansible playbook
 echo "Cloning the Ansible playbook repository..."
-if [ ! -d ~/ansible-playbook ]; then
-  git clone https://github.com/zenxedo/ansible-wsl2-bootstrap.git ~/ansible-playbook
-else
-  echo "Playbook already exists, pulling latest changes..."
-  cd ~/ansible-playbook
-  git pull
-fi
+git clone https://github.com/zenxedo/ansible-wsl2-bootstrap.git ~/ansible-playbook
 
-# Step 4: Run the Ansible playbook
 echo "Running the Ansible playbook..."
 cd ~/ansible-playbook
 ansible-playbook playbook.yml --ask-become-pass
 
-# Final message
-echo "Bootstrap completed. WSL2 setup is ready."
+# Remove the bootstrap script after execution
+echo "Cleaning up the bootstrap script..."
+rm -- "$0"
+
