@@ -7,7 +7,7 @@ This playbook sets up a basic development environment in WSL2, installing essent
 Run the following command in your WSL terminal to download and run the playbook:
 
 ```bash
-curl -s https://raw.githubusercontent.com/your-repo/ansible-wsl2-bootstrap/master/bootstrap.yml -o bootstrap.yml && sudo ansible-playbook bootstrap.yml --ask-become-pass
+curl -s https://raw.githubusercontent.com/zenxedo/ansible-wsl2-bootstrap/master/bootstrap.yml -o bootstrap.yml && sudo ansible-playbook bootstrap.yml --ask-become-pass
 ```
 
 ## What It Does
