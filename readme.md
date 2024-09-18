@@ -12,7 +12,7 @@ This repository contains an Ansible playbook and a bootstrap script for setting 
 To quickly bootstrap your WSL2 environment, simply run the following command in your WSL terminal:
 
 ```bash
-bash <(curl -s https://raw.githubusercontent.com/zenxedo/ansible-wsl2-bootstrap/master/bootstrap.sh)
+curl -s https://raw.githubusercontent.com/zenxedo/ansible-wsl2-bootstrap/master/bootstrap.sh -o bootstrap.sh && sudo chmod +x bootstrap.sh && sudo ./bootstrap.sh
 ```
 
 This will:
