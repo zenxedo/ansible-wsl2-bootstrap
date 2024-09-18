@@ -1,53 +1,79 @@
 ---
 - name: WSL2 Bootstrap Playbook
   hosts: localhost
-  become: true
-
-  vars:
-    # Define the essential packages
-    essential_packages:
-      - curl
-      - wget
-
-    # Python installation control
-    install_python: true
-    python_packages:
-      - python3
-      - python3-pip
-      - python3-venv
-
-    # Docker installation control
-    install_docker: true
-    docker_packages:
-      - docker-ce
-      - docker-ce-cli
-      - containerd.io
-      - docker-compose
+  become: yes
 
   tasks:
 
-    # Step 1: Update and upgrade system packages
-    - name: Update and upgrade system packages
+    # Update and upgrade the system
+    - name: Update apt cache and upgrade packages
       apt:
         update_cache: yes
         upgrade: dist
 
-    # Step 2: Install essential packages (curl, wget)
-    - name: Install essential packages
+    # Install Python3 and pip
+    - name: Install Python3 and pip3
       apt:
-        name: "{{ essential_packages }}"
+        name:
+          - python3
+          - python3-pip
         state: present
 
-    # Step 3: Conditionally install Python and related tools
-    - name: Install Python packages
+    # Install dependencies for Docker
+    - name: Install Docker dependencies
       apt:
-        name: "{{ python_packages }}"
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg-agent
+          - software-properties-common
         state: present
-      when: install_python
 
-    # Step 4: Conditionally install Docker and related tools
-    - name: Install Docker packages
-      apt:
-        name: "{{ docker_packages }}"
+    # Add Docker GPG key
+    - name: Add Docker’s official GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
         state: present
-      when: install_docker
+
+    # Add Docker apt repository
+    - name: Add Docker apt repository
+      apt_repository:
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+        state: present
+        update_cache: yes
+
+    # Install Docker
+    - name: Install Docker CE
+      apt:
+        name: docker-ce
+        state: present
+
+    # Install Docker Python module
+    - name: Install Docker Python module
+      pip:
+        name: docker
+
+    # Start and enable Docker service
+    - name: Ensure Docker is started and enabled
+      systemd:
+        name: docker
+        enabled: yes
+        state: started
+
+    # Add user to Docker group
+    - name: Add current user to Docker group
+      user:
+        name: "{{ ansible_user }}"
+        groups: docker
+        append: yes
+
+    # Optional: Verify Docker installation
+    - name: Verify Docker is installed
+      command: docker --version
+      register: docker_version
+
+    - name: Show Docker version
+      debug:
+        var: docker_version.stdout
+
