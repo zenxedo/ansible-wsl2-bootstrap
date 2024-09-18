@@ -1,7 +1,15 @@
 ---
-- name: WSL2 Bootstrap Playbook
+- name: Setup Python, Docker, Terraform, and additional repositories on Ubuntu
   hosts: localhost
   become: yes
+
+  vars:
+    repos:
+      - repo_url: "https://github.com/zenxedo/terraform.git"
+        dest: "/home/{{ ansible_user }}/terraform"
+      - repo_url: "https://github.com/zenxedo/ansible"
+        dest: "/home/{{ ansible_user }}/ansible"
+      # Add more repositories here
 
   tasks:
 
@@ -19,7 +27,7 @@
           - python3-pip
         state: present
 
-    # Install dependencies for Docker
+    # Install Docker dependencies
     - name: Install Docker dependencies
       apt:
         name:
@@ -61,12 +69,41 @@
         enabled: yes
         state: started
 
-    # Add user to Docker group
+    # Add current user to Docker group
     - name: Add current user to Docker group
       user:
         name: "{{ ansible_user }}"
         groups: docker
         append: yes
+
+    # Install HashiCorp GPG key
+    - name: Install HashiCorp GPG key
+      apt_key:
+        url: https://apt.releases.hashicorp.com/gpg
+        state: present
+
+    # Add HashiCorp repository for Terraform
+    - name: Add HashiCorp repository
+      apt_repository:
+        repo: "deb [arch=amd64] https://apt.releases.hashicorp.com {{ ansible_distribution_release }} main"
+        state: present
+        update_cache: yes
+
+    # Install Terraform
+    - name: Install Terraform
+      apt:
+        name: terraform
+        state: present
+
+    # Clone additional repositories from the variable list
+        # Clone private repositories from the variable list using SSH
+    - name: Clone private repositories via SSH
+      git:
+        repo: "{{ item.repo_url }}"
+        dest: "{{ item.dest }}"
+        key_file: "/home/{{ ansible_user }}/.ssh/id_rsa"  # Path to your SSH private key
+      with_items: "{{ repos }}"
+
 
     # Optional: Verify Docker installation
     - name: Verify Docker is installed
@@ -77,3 +114,11 @@
       debug:
         var: docker_version.stdout
 
+    # Optional: Verify Terraform installation
+    - name: Verify Terraform is installed
+      command: terraform --version
+      register: terraform_version
+
+    - name: Show Terraform version
+      debug:
+        var: terraform_version.stdout
